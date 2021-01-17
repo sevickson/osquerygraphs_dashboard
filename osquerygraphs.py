@@ -3,7 +3,6 @@ from components import URLParam
 from css import all_css
 from util import getChild
 import views.osquerygraphs.gfunctions as gf
-#import views.osquerygraphs.gfunctions as gf
 
 ############################################
 #
@@ -20,7 +19,7 @@ def info():
     return {
         'id': app_id,
         'name': 'Osquery Table Visualizer',
-        'tags': ['osq']
+        'tags': ['prod']
     }
 
 def run():
@@ -60,7 +59,7 @@ def sidebar_area():
         tables.sort()
         table_ids = st.multiselect('Show Tables with connections (remove (off) to enable filter)', ['(off)'] + tables.tolist())
 
-        t_init = urlParams.get_field('T', '') #'arp_cache')
+        t_init = urlParams.get_field('T', '')
         table_like = st.text_input('Show Tables with name like', t_init)
         urlParams.set_field('T', table_like)
 
@@ -91,7 +90,7 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     g = g.encode_point_color('type', categorical_mapping={lvl1:'rgb(228,26,28)',lvl2:'rgb(55,126,184)',lvl3:'rgb(77,175,74)'}) 
     g = g.encode_edge_color('edgeType', ['rgb(102,194,165)', 'rgb(252,141,98)'], as_continuous=True)
 
-    ## create function to filter based on ids for nodes and edges
+    ## Function to filter based on ids for nodes and edges
     # only enter if the length of ids is not all the tables and not off or empty
     if len(ids) < data_df_split['Table'].nunique() and not any("(off)" in s for s in table_ids) and not (ids == ''):
         g = g.nodes(gf.C(g._nodes,ids)).edges(gf.F(g._edges,ids))
@@ -120,8 +119,6 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
 def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff):
     # Display the graph!
     logger.debug('rendering main area, with url: %s', graph_url)
-    #GraphistrySt().
-    #st.write(graph_url)
     gf.E(logger,graph_url)
 
     #st.write(table_ids)
@@ -143,16 +140,13 @@ def run_all():
 
     try:
         # Render sidebar and get current settings
-        #st.write('sidebar')
         sidebar_filters = sidebar_area()
 
         # Compute filter pipeline (with auto-caching based on filter setting inputs)
         # Selective mark these as URL params as well
-        #st.write('filter')
         filter_pipeline_result = run_filters(**sidebar_filters)
 
         # Render main viz area based on computed filter pipeline results and sidebar settings
-        #st.write('main')
         main_area(**sidebar_filters, **filter_pipeline_result)
 
     except Exception as exn:
