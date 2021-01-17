@@ -2,7 +2,7 @@ import pandas as pd, streamlit as st
 from components import URLParam
 from css import all_css
 from util import getChild
-import views.osquerygraphs.gfunctions as gf
+import gfunctions as gf
 
 ############################################
 #
