@@ -4,6 +4,6 @@ streamlit==0.70.0
 css
 #grammar
 #spacy
-#components==1.2.8
-#util==0.0.1
-#views==0.3
+components==1.2.8
+util==0.0.1
+views==0.3
