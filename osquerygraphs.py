@@ -58,9 +58,10 @@ def sidebar_area():
         tables = pd.concat([ data_df['Table'] ]).unique()
         tables.sort()
         table_ids = st.multiselect('Show Tables with connections (remove (off) to enable filter)', ['(off)'] + tables.tolist())
-
+        
+        #temporary till fixed
         #t_init = urlParams.get_field('T', '')
-        table_like = st.text_input('Show Tables with name like', t_init)
+        #table_like = st.text_input('Show Tables with name like', t_init)
         #urlParams.set_field('T', table_like)
 
         name_diff = st.checkbox('Show connected Table columns with different names (Possible naming inconsistencies)')
