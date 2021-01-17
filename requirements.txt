@@ -1,7 +1,7 @@
 graphistry==0.15.0
 pandas==1.2.0
 streamlit==0.70.0
-css==1.0
+css
 #grammar
 #spacy
 #components==1.2.8
