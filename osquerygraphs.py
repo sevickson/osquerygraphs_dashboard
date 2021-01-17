@@ -1,7 +1,7 @@
 import pandas as pd, streamlit as st
 #from components import URLParam
 #from css import all_css
-from util import getChild
+#from util import getChild
 import gfunctions as gf
 
 ############################################
@@ -12,7 +12,7 @@ import gfunctions as gf
 #  Controls how entrypoint.py picks it up
 
 app_id = 'osquery_graphs'
-logger = getChild(app_id)
+#logger = getChild(app_id)
 #urlParams = URLParam(app_id)
 
 def info():
