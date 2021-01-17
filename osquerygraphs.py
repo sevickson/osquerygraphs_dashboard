@@ -1,6 +1,6 @@
 import pandas as pd, streamlit as st
 #from components import URLParam
-from css import all_css
+#from css import all_css
 from util import getChild
 import gfunctions as gf
 
@@ -32,12 +32,12 @@ def run():
 ############################################
 
 # Have fun!
-def custom_css():
-    all_css()
-    st.markdown(
-        """<style>
-        
-        </style>""",unsafe_allow_html=True)
+#def custom_css():
+#    all_css()
+#    st.markdown(
+#        """<style>
+#        
+#        </style>""",unsafe_allow_html=True)
 
 # Given URL params, render left sidebar form and return combined filter settings
 #https://docs.streamlit.io/en/stable/api.html#display-interactive-widgets
@@ -136,7 +136,7 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
 ############################################
 def run_all():
 
-    custom_css()
+#    custom_css()
 
     try:
         # Render sidebar and get current settings
