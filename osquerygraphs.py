@@ -118,10 +118,15 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     graph_url = g.name(title).plot(render=False, as_files=True)
     return { 'nodes_df': g._nodes, 'edges_df': g._edges, 'graph_url': graph_url}
 
+def render_url(url):
+    #logger.debug('rendering main area, with url: %s', url)
+    iframe = '<iframe src="' + url + '", height="800", width="100%" allow="fullscreen"></iframe>'
+    st.markdown(iframe, unsafe_allow_html=True)
+    
 def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff):
     # Display the graph!
-    logger.debug('rendering main area, with url: %s', graph_url)
-    gf.p(logger,graph_url)
+    #logger.debug('rendering main area, with url: %s', graph_url)
+    render_url(graph_url)
 
     #st.write(table_ids)
     #st.subheader('Selected tables')
