@@ -123,7 +123,7 @@ def render_url(url):
     #logger.debug('rendering main area, with url: %s', url)
     #iframe = '<iframe src="' + url + '", height="800", width="100%" allow="fullscreen"></iframe>'
     #st.markdown(iframe, unsafe_allow_html=True)
-    components.iframe(url,height=1000)
+    components.iframe(url,width='100%',height=800)
     
 def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff):
     # Display the graph!
