@@ -152,3 +152,5 @@ def run_all():
     except Exception as exn:
         st.write('Error loading dashboard')
         st.write(exn)
+
+run()
