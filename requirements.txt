@@ -1,5 +1,9 @@
 graphistry==0.15.0
-pandas
-css
-grammar
-spacy
+pandas==1.2.0
+streamlit==0.70.0
+css==1.0
+#grammar
+#spacy
+#components==1.2.8
+#util==0.0.1
+#views==0.3
