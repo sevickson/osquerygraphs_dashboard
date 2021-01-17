@@ -61,7 +61,8 @@ def sidebar_area():
         
         #temporary till fixed
         #t_init = urlParams.get_field('T', '')
-        #table_like = st.text_input('Show Tables with name like', t_init)
+        t_init = ''
+        table_like = st.text_input('Show Tables with name like', t_init)
         #urlParams.set_field('T', table_like)
 
         name_diff = st.checkbox('Show connected Table columns with different names (Possible naming inconsistencies)')
