@@ -1,9 +1,9 @@
 graphistry==0.15.0
 pandas==1.2.0
-streamlit==0.70.0
+streamlit
 css
-#grammar
-#spacy
-components==1.2.8
-util==0.0.1
+grammar
+spacy
+#components==1.2.8
+util
 views==0.3
