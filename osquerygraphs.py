@@ -3,6 +3,7 @@ import pandas as pd, streamlit as st
 #from css import all_css
 #from util import getChild
 import gfunctions as gf
+import streamlit.components.v1 as components
 
 ############################################
 #
@@ -120,8 +121,9 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
 
 def render_url(url):
     #logger.debug('rendering main area, with url: %s', url)
-    iframe = '<iframe src="' + url + '", height="800", width="100%" allow="fullscreen"></iframe>'
-    st.markdown(iframe, unsafe_allow_html=True)
+    #iframe = '<iframe src="' + url + '", height="800", width="100%" allow="fullscreen"></iframe>'
+    #st.markdown(iframe, unsafe_allow_html=True)
+    components.iframe(url,height=800)
     
 def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff):
     # Display the graph!
