@@ -1,5 +1,5 @@
 import pandas as pd, streamlit as st
-from components import URLParam
+#from components import URLParam
 from css import all_css
 from util import getChild
 import gfunctions as gf
@@ -13,7 +13,7 @@ import gfunctions as gf
 
 app_id = 'osquery_graphs'
 logger = getChild(app_id)
-urlParams = URLParam(app_id)
+#urlParams = URLParam(app_id)
 
 def info():
     return {
@@ -59,9 +59,9 @@ def sidebar_area():
         tables.sort()
         table_ids = st.multiselect('Show Tables with connections (remove (off) to enable filter)', ['(off)'] + tables.tolist())
 
-        t_init = urlParams.get_field('T', '')
+        #t_init = urlParams.get_field('T', '')
         table_like = st.text_input('Show Tables with name like', t_init)
-        urlParams.set_field('T', table_like)
+        #urlParams.set_field('T', table_like)
 
         name_diff = st.checkbox('Show connected Table columns with different names (Possible naming inconsistencies)')
 
