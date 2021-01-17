@@ -81,12 +81,12 @@ def fetch_csv(url):
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, hash_funcs={pd.DataFrame: lambda _: None})
 def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disperse, os_choice,dark_mode,name_diff):
     #Get data
-    data_df_split = gf.Y(data_csv_df,'intersect')
+    data_df_split = gf.m(data_csv_df,'intersect')
 
     lvl1, lvl2, lvl3 = 'Table', 'Table.Column', 'output'
-    ids = gf.x(data_df_split, table_like, table_ids)
+    ids = gf.z(data_df_split, table_like, table_ids)
 
-    g = gf.l(data_df_split, lvl1, lvl2, lvl3)
+    g = gf.n(data_df_split, lvl1, lvl2, lvl3)
 
     # Add color
     g = g.encode_point_color('type', categorical_mapping={lvl1:'rgb(228,26,28)',lvl2:'rgb(55,126,184)',lvl3:'rgb(77,175,74)'}) 
@@ -95,7 +95,7 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     ## Function to filter based on ids for nodes and edges
     # only enter if the length of ids is not all the tables and not off or empty
     if len(ids) < data_df_split['Table'].nunique() and not any("(off)" in s for s in table_ids) and not (ids == ''):
-        g = g.nodes(gf.C(g._nodes,ids)).edges(gf.F(g._edges,ids))
+        g = g.nodes(gf.P(g._nodes,ids)).edges(gf.j(g._edges,ids))
 
     # Add url params settings
     g = g.settings(url_params={'play':'5000','showArrows':'false','edgeCurvature':0.02,'edgeOpacity':0.1,'lockedR':'true','linLog':'true','pointSize': 3,'bg':'white','labelBackground':'%234A4A4A'})
@@ -107,7 +107,7 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
         g = g.settings(url_params={'bg':'%23323238'})
     
     if name_diff:
-        g = g.edges(gf.K(g._edges))
+        g = g.edges(gf.w(g._edges))
 
     # Bind options
     g = g.bind(point_title ='node_title', point_x='radius', point_y=0)
@@ -121,7 +121,7 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
 def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff):
     # Display the graph!
     logger.debug('rendering main area, with url: %s', graph_url)
-    gf.E(logger,graph_url)
+    gf.p(logger,graph_url)
 
     #st.write(table_ids)
     #st.subheader('Selected tables')
