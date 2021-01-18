@@ -1,7 +1,7 @@
 import pandas as pd, streamlit as st
 from components.URLParam import URLParam
 from components.css import all_css
-import gfunctions as gf
+from components import gfunctions as gf
 
 ############################################
 #
@@ -40,9 +40,11 @@ def sidebar_area():
         tables.sort()
         table_ids = st.multiselect('Show Tables with connections (remove (off) to enable filter)', ['(off)'] + tables.tolist())
         
+        #not working locally
         t_init = urlParams.get_field('T', '')
+        #t_init = ''
         table_like = st.text_input('Show Tables with name like', t_init)
-        urlParams.set_field('T', table_like)
+        #urlParams.set_field('T', table_like)
 
         name_diff = st.checkbox('Show connected Table columns with different names (Possible naming inconsistencies)')
 
@@ -60,6 +62,23 @@ def fetch_csv(url):
     df_r = pd.read_csv(url)
     return(df_r)
 
+def table_names_selected(df, table, table_ids):
+    
+    filtered = df
+
+    table_name_filter = table if len(table) > 0 and not (table == '(off)') and not (table == '') else None
+    table_id_filter = [x for x in table_ids if x != '(off)']
+
+    if (not (table_name_filter is None)) or (len(table_id_filter) > 0):
+        hits = filtered['Table'] == 'no hits'
+        if not (table_name_filter is None):
+            hits = filtered['Table'].str.contains(table_name_filter, case=False)
+        for id in table_id_filter:
+            hits = hits | (filtered['Table'] == id)
+        filtered = filtered[ hits ]
+    
+    return(filtered)
+
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, hash_funcs={pd.DataFrame: lambda _: None})
 def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disperse, os_choice,dark_mode,name_diff,expert_mode):
     #Get data
@@ -71,12 +90,8 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     g = gf.n(data_df_split, lvl1, lvl2, lvl3)
 
     # Add color
-    #g = g.encode_point_color('type', categorical_mapping={lvl1:'rgb(228,26,28)',lvl2:'rgb(55,126,184)',lvl3:'rgb(77,175,74)'}) 
     # Colors from Osquery logo #a596ff and #00125f
     g = g.encode_point_color('type', categorical_mapping={lvl1:'#a596ff',lvl2:'#00125f'})
-    
-    #g = g.encode_edge_color('edgeType', ['rgb(102,194,165)', 'rgb(252,141,98)'], as_continuous=True)
-    #g = g.encode_edge_color('edgeType', ['#4a9dff','#b35346'], as_continuous=True)
     g = g.encode_edge_color('edgeType', ['#4a9dff','#6f749a'], as_continuous=True)
     
     ## Function to filter based on ids for nodes and edges
@@ -97,7 +112,7 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
         g = g.edges(gf.w(g._edges))
     
     if expert_mode:
-        g = g.settings(url_params={'menu':'false'})
+        g = g.settings(url_params={'menu':'true'})
 
     # Bind options
     g = g.bind(point_title ='node_title', point_x='radius', point_y=0)
@@ -116,11 +131,15 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
     # Display the graph!
     render_url(graph_url)
 
-    #st.write(table_ids)
     st.subheader('Selected tables')
-    st.write(data_csv_df['Table','Column','Column_Total','Column_Join','Percent_Join'].head(10))
+    #Source: https://github.com/streamlit/streamlit/issues/641
+    # .assign(hack='').set_index('hack')
+    selected = table_names_selected(data_csv_df, table_like, table_ids)
+    selection = ['Table','Column','Column_Total','Column_Join','Percent_Join']
+    st.dataframe((selected[selection].drop_duplicates(keep='last').assign(hack='').set_index('hack')))
+
     st.subheader('Surrounding columns')
-    st.write(nodes_df['Table.Column'].unique())
+    st.dataframe(nodes_df['Table.Column'].unique())
     st.subheader('Surrounding connections')
     #not working
     #st.write(pd.unique(edges_df['src','dst']]))
