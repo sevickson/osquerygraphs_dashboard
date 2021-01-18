@@ -113,10 +113,10 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
     #st.write(table_ids)
     st.subheader('Selected tables')
     #st.write(nodes_df)
-    st.subheader('Surrounding tables')
-    st.write(nodes_df)
+    st.subheader('Surrounding columns')
+    st.write(nodes_df['Table.Column'].nunique().reset_index())
     st.subheader('Surrounding connections')
-    st.write(edges_df)
+    st.write(edges_df['src','dst'].nunique().reset_index())
 
 ############################################
 #
