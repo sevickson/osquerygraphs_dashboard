@@ -82,7 +82,7 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
         g = g.nodes(gf.P(g._nodes,ids)).edges(gf.j(g._edges,ids))
 
     # Add url params settings
-    g = g.settings(url_params={'play':'5000','showArrows':'false','edgeCurvature':0.02,'edgeOpacity':0.1,'lockedR':'true','linLog':'true','pointSize': 3,'bg':'white','labelBackground':'%234A4A4A'})
+    g = g.settings(url_params={'play':'5000','showArrows':'false','edgeCurvature':0.02,'edgeOpacity':0.1,'lockedR':'true','dissuadeHubs':'true','pointSize': 3,'bg':'white','labelBackground':'%234A4A4A','menu':'false'})
     
     if disperse:
         g = g.settings(url_params={'lockedR':'false'})
@@ -112,11 +112,12 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
 
     #st.write(table_ids)
     st.subheader('Selected tables')
-    #st.write(nodes_df)
+    st.write(data_csv_df)
     st.subheader('Surrounding columns')
     st.write(nodes_df['Table.Column'].unique())
     st.subheader('Surrounding connections')
-    st.write(pd.unique(edges_df[['src','dst']]))
+    #not working
+    #st.write(pd.unique(edges_df['src','dst']]))
     #st.write(edges_df.groupby(['src','dst']).unique())
 
 ############################################
