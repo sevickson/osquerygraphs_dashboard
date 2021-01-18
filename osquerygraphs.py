@@ -40,9 +40,7 @@ def sidebar_area():
         tables.sort()
         table_ids = st.multiselect('Show Tables with connections (remove (off) to enable filter)', ['(off)'] + tables.tolist())
         
-        #temporary till fixed
         t_init = urlParams.get_field('T', '')
-        #t_init = ''
         table_like = st.text_input('Show Tables with name like', t_init)
         urlParams.set_field('T', table_like)
 
@@ -71,9 +69,9 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
 
     # Add color
     #g = g.encode_point_color('type', categorical_mapping={lvl1:'rgb(228,26,28)',lvl2:'rgb(55,126,184)',lvl3:'rgb(77,175,74)'}) 
-    g = g.encode_point_color('type', categorical_mapping={lvl1:'%23a596ff',lvl2:'%2300125f'})#,lvl3:'rgb(77,175,74)'})
+    g = g.encode_point_color('type', categorical_mapping={lvl1:'#a596ff',lvl2:'#00125f'})#,lvl3:'rgb(77,175,74)'})
     #g = g.encode_edge_color('edgeType', ['rgb(102,194,165)', 'rgb(252,141,98)'], as_continuous=True)
-    g = g.encode_edge_color('edgeType', ['%23b35346', '%234a9dff'], as_continuous=True)
+    g = g.encode_edge_color('edgeType', ['#b35346', '#4a9dff'], as_continuous=True)
 
     ## Function to filter based on ids for nodes and edges
     # only enter if the length of ids is not all the tables and not off or empty
