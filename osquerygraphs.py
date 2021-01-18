@@ -3,28 +3,7 @@ import pandas as pd, streamlit as st
 from css.css import all_css
 #from util import getChild
 import gfunctions as gf
-import streamlit.components.v1 as components
-
-############################################
-#
-#   DASHBOARD SETTINGS
-#
-############################################
-#  Controls how entrypoint.py picks it up
-
-#app_id = 'osquery_graphs'
-#logger = getChild(app_id)
-#urlParams = URLParam(app_id)
-
-#def info():
-#    return {
-#        'id': app_id,
-#        'name': 'Osquery Table Visualizer',
-#        'tags': ['prod']
-#    }
-
-#def run():
-#    run_all()
+#import streamlit.components.v1 as components
 
 ############################################
 #
@@ -123,9 +102,9 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
 
 def render_url(url):
     #logger.debug('rendering main area, with url: %s', url)
-    #iframe = '<iframe src="' + url + '", height="800", width="100%" allow="fullscreen"></iframe>'
-    #st.markdown(iframe, unsafe_allow_html=True)
-    components.iframe(url,width=800,height=800)
+    iframe = '<iframe src="' + url + '", height="800", width="100%" allow="fullscreen"></iframe>'
+    st.markdown(iframe, unsafe_allow_html=True)
+    #components.iframe(url,width=800,height=800)
     
 def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff):
     # Display the graph!
@@ -147,7 +126,7 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
 ############################################
 def run_all():
 
-#    custom_css()
+    custom_css()
 
     try:
         # Render sidebar and get current settings
@@ -164,4 +143,5 @@ def run_all():
         st.write('Error loading dashboard')
         st.write(exn)
 
+# Run the app, create the dashboard
 run_all()
