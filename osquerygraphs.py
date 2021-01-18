@@ -50,7 +50,9 @@ def sidebar_area():
         disperse = st.checkbox('Disperse Graph')
         # Dark mode
         dark_mode = st.checkbox('Dark Mode')
-    return {'num_nodes': 1000000, 'num_edges': 1000000, 'table_like': table_like, 'table_ids': table_ids, 'os_choice': os_choice, 'data_csv_df': data_df, 'disperse' : disperse, 'dark_mode': dark_mode, 'name_diff': name_diff}
+        # Expert mode adds menu to the graph in graphistry
+        expert_mode = st.checkbox('Dark Mode')
+    return {'num_nodes': 1000000, 'num_edges': 1000000, 'table_like': table_like, 'table_ids': table_ids, 'os_choice': os_choice, 'data_csv_df': data_df, 'disperse' : disperse, 'dark_mode': dark_mode, 'name_diff': name_diff, 'expert_mode': expert_mode}
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, hash_funcs={pd.DataFrame: lambda _: None})
 def fetch_csv(url):
@@ -58,7 +60,7 @@ def fetch_csv(url):
     return(df_r)
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, hash_funcs={pd.DataFrame: lambda _: None})
-def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disperse, os_choice,dark_mode,name_diff):
+def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disperse, os_choice,dark_mode,name_diff,expert_mode):
     #Get data
     data_df_split = gf.m(data_csv_df,'intersect')
 
@@ -92,6 +94,9 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     
     if name_diff:
         g = g.edges(gf.w(g._edges))
+    
+    if expert_mode:
+        g = g.settings(url_params={'menu':'false'})
 
     # Bind options
     g = g.bind(point_title ='node_title', point_x='radius', point_y=0)
@@ -106,13 +111,13 @@ def render_url(url):
     iframe = '<iframe src="' + url + '", height="800", width="100%" allow="fullscreen"></iframe>'
     st.markdown(iframe, unsafe_allow_html=True)
     
-def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff):
+def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff,expert_mode):
     # Display the graph!
     render_url(graph_url)
 
     #st.write(table_ids)
     st.subheader('Selected tables')
-    st.write(data_csv_df)
+    st.write(data_csv_df.head(10))
     st.subheader('Surrounding columns')
     st.write(nodes_df['Table.Column'].unique())
     st.subheader('Surrounding connections')
