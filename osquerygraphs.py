@@ -1,5 +1,5 @@
 import pandas as pd, streamlit as st
-import components.URLParam as URLParam
+from components import URLParam
 from components.css import all_css
 import gfunctions as gf
 
