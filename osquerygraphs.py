@@ -51,7 +51,8 @@ def sidebar_area():
         # Dark mode
         dark_mode = st.checkbox('Dark Mode')
         # Expert mode adds menu to the graph in graphistry
-        expert_mode = st.checkbox('Dark Mode')
+        expert_mode = st.checkbox('Expert Mode')
+        
     return {'num_nodes': 1000000, 'num_edges': 1000000, 'table_like': table_like, 'table_ids': table_ids, 'os_choice': os_choice, 'data_csv_df': data_df, 'disperse' : disperse, 'dark_mode': dark_mode, 'name_diff': name_diff, 'expert_mode': expert_mode}
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, hash_funcs={pd.DataFrame: lambda _: None})
