@@ -114,9 +114,9 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
     st.subheader('Selected tables')
     #st.write(nodes_df)
     st.subheader('Surrounding columns')
-    st.write(nodes_df['Table.Column'].nunique())
+    st.write(nodes_df['Table.Column'].unique())
     st.subheader('Surrounding connections')
-    st.write(edges_df['src','dst'].nunique())
+    st.write(edges_df['src','dst'].unique())
 
 ############################################
 #
