@@ -1,15 +1,16 @@
 import pandas as pd, streamlit as st
-#from components import URLParam
-from css.css import all_css
-#from util import getChild
+import components.URLParam #import URLParam
+from components.css import all_css
 import gfunctions as gf
-#import streamlit.components.v1 as components
 
 ############################################
 #
 #   PIPELINE PIECES
 #
 ############################################
+
+app_id = 'osquerygraphs'
+urlParams = URLParam(app_id)
 
 # Have fun!
 def custom_css():
@@ -40,10 +41,10 @@ def sidebar_area():
         table_ids = st.multiselect('Show Tables with connections (remove (off) to enable filter)', ['(off)'] + tables.tolist())
         
         #temporary till fixed
-        #t_init = urlParams.get_field('T', '')
-        t_init = ''
+        t_init = urlParams.get_field('T', '')
+        #t_init = ''
         table_like = st.text_input('Show Tables with name like', t_init)
-        #urlParams.set_field('T', table_like)
+        urlParams.set_field('T', table_like)
 
         name_diff = st.checkbox('Show connected Table columns with different names (Possible naming inconsistencies)')
 
@@ -101,14 +102,11 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     return { 'nodes_df': g._nodes, 'edges_df': g._edges, 'graph_url': graph_url}
 
 def render_url(url):
-    #logger.debug('rendering main area, with url: %s', url)
     iframe = '<iframe src="' + url + '", height="800", width="100%" allow="fullscreen"></iframe>'
     st.markdown(iframe, unsafe_allow_html=True)
-    #components.iframe(url,width=800,height=800)
     
 def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff):
     # Display the graph!
-    #logger.debug('rendering main area, with url: %s', graph_url)
     render_url(graph_url)
 
     #st.write(table_ids)
