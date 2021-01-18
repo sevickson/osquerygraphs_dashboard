@@ -52,7 +52,7 @@ def sidebar_area():
         dark_mode = st.checkbox('Dark Mode')
         # Expert mode adds menu to the graph in graphistry
         expert_mode = st.checkbox('Expert Mode')
-        
+
     return {'num_nodes': 1000000, 'num_edges': 1000000, 'table_like': table_like, 'table_ids': table_ids, 'os_choice': os_choice, 'data_csv_df': data_df, 'disperse' : disperse, 'dark_mode': dark_mode, 'name_diff': name_diff, 'expert_mode': expert_mode}
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, hash_funcs={pd.DataFrame: lambda _: None})
@@ -118,7 +118,7 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
 
     #st.write(table_ids)
     st.subheader('Selected tables')
-    st.write(data_csv_df.head(10))
+    st.write(data_csv_df['Table','Column','Column_Total','Column_Join','Percent_Join'].head(10))
     st.subheader('Surrounding columns')
     st.write(nodes_df['Table.Column'].unique())
     st.subheader('Surrounding connections')
