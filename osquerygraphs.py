@@ -1,6 +1,6 @@
 import pandas as pd, streamlit as st
 #from components import URLParam
-#from css import all_css
+from css.css import all_css
 #from util import getChild
 import gfunctions as gf
 import streamlit.components.v1 as components
@@ -12,19 +12,19 @@ import streamlit.components.v1 as components
 ############################################
 #  Controls how entrypoint.py picks it up
 
-app_id = 'osquery_graphs'
+#app_id = 'osquery_graphs'
 #logger = getChild(app_id)
 #urlParams = URLParam(app_id)
 
-def info():
-    return {
-        'id': app_id,
-        'name': 'Osquery Table Visualizer',
-        'tags': ['prod']
-    }
+#def info():
+#    return {
+#        'id': app_id,
+#        'name': 'Osquery Table Visualizer',
+#        'tags': ['prod']
+#    }
 
-def run():
-    run_all()
+#def run():
+#    run_all()
 
 ############################################
 #
@@ -33,12 +33,12 @@ def run():
 ############################################
 
 # Have fun!
-#def custom_css():
-#    all_css()
-#    st.markdown(
-#        """<style>
-#        
-#        </style>""",unsafe_allow_html=True)
+def custom_css():
+    all_css()
+    st.markdown(
+        """<style>
+        
+        </style>""",unsafe_allow_html=True)
 
 # Given URL params, render left sidebar form and return combined filter settings
 #https://docs.streamlit.io/en/stable/api.html#display-interactive-widgets
@@ -90,8 +90,10 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     g = gf.n(data_df_split, lvl1, lvl2, lvl3)
 
     # Add color
-    g = g.encode_point_color('type', categorical_mapping={lvl1:'rgb(228,26,28)',lvl2:'rgb(55,126,184)',lvl3:'rgb(77,175,74)'}) 
-    g = g.encode_edge_color('edgeType', ['rgb(102,194,165)', 'rgb(252,141,98)'], as_continuous=True)
+    #g = g.encode_point_color('type', categorical_mapping={lvl1:'rgb(228,26,28)',lvl2:'rgb(55,126,184)',lvl3:'rgb(77,175,74)'}) 
+    g = g.encode_point_color('type', categorical_mapping={lvl1:'%23a596ff',lvl2:'%2300125f'})#,lvl3:'rgb(77,175,74)'})
+    #g = g.encode_edge_color('edgeType', ['rgb(102,194,165)', 'rgb(252,141,98)'], as_continuous=True)
+    g = g.encode_edge_color('edgeType', ['%23b35346', '%234a9dff'], as_continuous=True)
 
     ## Function to filter based on ids for nodes and edges
     # only enter if the length of ids is not all the tables and not off or empty
@@ -162,4 +164,4 @@ def run_all():
         st.write('Error loading dashboard')
         st.write(exn)
 
-run()
+run_all()
