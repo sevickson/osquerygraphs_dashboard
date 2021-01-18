@@ -116,7 +116,8 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
     st.subheader('Surrounding columns')
     st.write(nodes_df['Table.Column'].unique())
     st.subheader('Surrounding connections')
-    st.write(edges_df['src','dst'].unique())
+    st.write(pd.unique(edges_df['src','dst']))
+    #st.write(edges_df.groupby(['src','dst']).unique())
 
 ############################################
 #
