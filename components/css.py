@@ -20,18 +20,18 @@ def max_main_width():
             unsafe_allow_html=True)
 
 #Hide dev menu
-def hide_dev_menu():
-    hide_streamlit_style = """
-    <style>
+#def hide_dev_menu():
+#    hide_streamlit_style = """
+#    <style>
     #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    </style>
-    """
-    st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
+#    footer {visibility: hidden;}
+#    </style>
+#    """
+#    st.markdown(hide_streamlit_style, unsafe_allow_html=True) 
 
 
 def all_css(is_max_main_width=True, is_hide_dev_menu=True):
     if is_max_main_width:
         max_main_width()
-    if is_hide_dev_menu:
-        hide_dev_menu()
+#    if is_hide_dev_menu:
+#        hide_dev_menu()

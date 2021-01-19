@@ -2,6 +2,7 @@ import pandas as pd, streamlit as st
 from components.URLParam import URLParam
 from components.css import all_css
 from components import gfunctions as gf
+from pathlib import Path
 
 ############################################
 #
@@ -12,6 +13,11 @@ from components import gfunctions as gf
 app_id = 'osquerygraphs'
 urlParams = URLParam(app_id)
 
+#TODO enable hide_menu in css again
+#TODO add hidden list with all tables/columns that are filtered out
+#TODO add more text to dashboard
+#TODO possible hidden option like named 'Data Explorer' with the dataframes
+
 # Have fun!
 def custom_css():
     all_css()
@@ -20,14 +26,40 @@ def custom_css():
         
         </style>""",unsafe_allow_html=True)
 
+# Generate SVG icons from FontAwesome, copy the .svg files into components/fa and use them based on filename
+#https://gist.github.com/treuille/8b9cbfec270f7cda44c5fc398361b3b1#gistcomment-3107721
+def icon_fa_svg(icon_name):#,w):
+    with open(f'components/fa/{icon_name}.svg','r') as f:
+        read_data = f.read()
+    return(read_data)
+    #st.image(read_data,width=w)
+
+#Source: https://pmbaumgartner.github.io/streamlitopedia/markdown.html#using-markdown-files
+@st.cache
+def read_markdown_file(markdown_file):
+    return Path(markdown_file).read_text()
+
 # Given URL params, render left sidebar form and return combined filter settings
 #https://docs.streamlit.io/en/stable/api.html#display-interactive-widgets
 def sidebar_area():
     with st.sidebar:
+        #st.title('Osquery Table Visualizer')
+        #https://discuss.streamlit.io/t/how-do-i-align-st-title/1668/5
+        st.markdown("<h1 style='text-align: center; color: purple;'>Osquery Table Visualizer</h1>", unsafe_allow_html=True)
+        #st.markdown('<font color=red>THIS TEXT WILL BE RED</font>', unsafe_allow_html=True)
+        #st.markdown('Data retrieved from [Osquery Data Graph](https://github.com/sevickson/Osquery_Data_Graph)')
+        #st.markdown("---")
 
-        st.markdown('Data retrieved from [Osquery Data Graph](https://github.com/sevickson/Osquery_Data_Graph)')
-
-        os_choice = st.radio('Operating System', ['Windows','Linux','MacOS'])
+        #os_choice = st.radio('Operating System', ['Windows','Linux','MacOS'])
+        left_column, right_column = st.beta_columns(2)
+        os_choice = left_column.radio('Operating System', ['Windows','Linux','MacOS'])
+        #will need to work on the view probably something to do with css?
+        #right_column.image(icon_fa_svg('windows'),10).image(icon_fa_svg('linux'),30).image(icon_fa_svg('apple'),30)
+        #right_column.image(icon_fa_svg('linux'),30)
+        #right_column.image(icon_fa_svg('apple'),30)
+        #icon_fa_svg('windows',30)
+        #icon_fa_svg('linux',30)
+        #icon_fa_svg('apple',30)
 
         if os_choice == 'Windows':
             data_df = fetch_csv('https://raw.githubusercontent.com/sevickson/Osquery_Data_Graph/master/Data/data_intersect_graphs_windows_hashed_PERC.csv')
@@ -40,20 +72,27 @@ def sidebar_area():
         tables.sort()
         table_ids = st.multiselect('Show Tables with connections (remove (off) to enable filter)', ['(off)'] + tables.tolist())
         
-        #not working locally
-        t_init = urlParams.get_field('T', '')
-        #t_init = ''
-        table_like = st.text_input('Show Tables with name like', t_init)
+        #Check later if needed
+        #t_init = urlParams.get_field('T', '')
+        #table_like = st.text_input('Show Tables with name like', t_init)
         #urlParams.set_field('T', table_like)
+        #TEMP for here above
+        table_like = ''
 
         name_diff = st.checkbox('Show connected Table columns with different names (Possible naming inconsistencies)')
 
-        # Checkbox to remove the radius lock, good for further zooming in after a select
-        disperse = st.checkbox('Disperse Graph')
-        # Dark mode
-        dark_mode = st.checkbox('Dark Mode')
-        # Expert mode adds menu to the graph in graphistry
-        expert_mode = st.checkbox('Expert Mode')
+        #left_column, right_column = st.beta_columns(2)
+        #os_choice = left_column.radio('Operating System', ['Windows','Linux','MacOS'])
+        #if pressed:
+        #    right_column.write("Woohoo!")
+        
+        with st.beta_expander("⚙️ Graph options"):
+            # Checkbox to remove the radius lock, good for further zooming in after a select
+            disperse = st.checkbox('Disperse Graph')
+            # Dark mode
+            dark_mode = st.checkbox('Dark Mode')
+            # Expert mode adds menu to the graph in graphistry
+            expert_mode = st.checkbox('Expert Mode')
 
     return {'num_nodes': 1000000, 'num_edges': 1000000, 'table_like': table_like, 'table_ids': table_ids, 'os_choice': os_choice, 'data_csv_df': data_df, 'disperse' : disperse, 'dark_mode': dark_mode, 'name_diff': name_diff, 'expert_mode': expert_mode}
 
@@ -100,7 +139,7 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
         g = g.nodes(gf.P(g._nodes,ids)).edges(gf.j(g._edges,ids))
 
     # Add url params settings
-    g = g.settings(url_params={'play':'5000','showArrows':'false','edgeCurvature':0.02,'edgeOpacity':0.1,'lockedR':'true','dissuadeHubs':'true','pointSize': 3,'bg':'white','labelBackground':'%234A4A4A','menu':'false'})
+    g = g.settings(url_params={'play':'5000','showArrows':'false','edgeCurvature':0.02,'edgeOpacity':0.1,'lockedR':'true','dissuadeHubs':'true','linLog':'true','pointSize': 3,'bg':'white','labelBackground':'%234A4A4A','menu':'false','pruneOrphans':'true'})
     
     if disperse:
         g = g.settings(url_params={'lockedR':'false'})
@@ -128,6 +167,12 @@ def render_url(url):
     st.markdown(iframe, unsafe_allow_html=True)
     
 def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff,expert_mode):
+    
+    #Source: https://pmbaumgartner.github.io/streamlitopedia/markdown.html#using-markdown-files
+    intro_markdown = read_markdown_file("intro.md")
+    st.markdown(intro_markdown, unsafe_allow_html=True)
+    
+    #st.title('Untangling Osquery❓ tables 🕸')
     # Display the graph!
     render_url(graph_url)
 
@@ -151,8 +196,10 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
 #
 ############################################
 def run_all():
+    st.set_page_config(page_title='Osquery Table Visualizer', page_icon='https://raw.githubusercontent.com/osquery/osquery-site/source/public/favicons/favicon-32x32.png', layout='centered', initial_sidebar_state='auto')
 
     custom_css()
+    #custom_css(is_hide_dev_menu=False)
 
     try:
         # Render sidebar and get current settings
