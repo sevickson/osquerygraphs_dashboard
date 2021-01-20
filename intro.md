@@ -1,12 +1,13 @@
-<details>
-<summary>ℹ️ Info</summary>
+Untangling the Osquery❓ tables 🕸 using Data📜 | Part 2
 
-This app explores data from [a research paper](https://www.nature.com/articles/s41598-018-22755-2) that evaluated THC and CBD measurements of cannabis products in Washington State. Start by selecting a strain type and a strain name from the left. The charts below will display the THC measurements across different suppliers and over time for that strain.
+This journey is to answer the following research question.
+How can I visualize the relationship between Osquery tables, for data enrichment?
+My personal motivation for wanting to answer this question is that visualization of the connection between Osquery Tables can help to understand the possibilities and help me and you!
+This is even more evident in Security Incidents where time is short and you want to enrich your data and gather the most evidence possible and when for example you are Threat Hunting and you want to pivot to another table based on retrieved data, you would want a way to easily figure out which Osquery Tables you can pivot to from the table you are at that moment.
 
-More details about the dataset are available via the help buttons on the left.
+Blog
 
-💡 This app was built to be an example for many of the ideas I've written down in my notes on [Streamlitopedia](https://pmbaumgartner.github.io/streamlitopedia/)
+Github
 
-💻 The code is available [here](https://github.com/pmbaumgartner/dank-data-explorer).
-</details>
-
+💻 The code for the data is available [here](https://github.com/sevickson/Osquery_Data_Graph).
+💻 The code for this dashboard is available [here](https://github.com/sevickson/osquerygraphs_dashboard).
