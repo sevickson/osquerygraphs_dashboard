@@ -185,23 +185,24 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
     intro_markdown = read_markdown_file("intro.md")
     #st.markdown(intro_markdown, unsafe_allow_html=True)
 
-    with st.beta_expander("ℹ Graph 🕸 Info"):
+    with st.beta_expander("🕸 Graph Info 🕸"):
         st.markdown(intro_markdown, unsafe_allow_html=True)
     
     # Display the graph!
     #st.write(graph_url)
     render_url(graph_url)
 
-    st.subheader('Selected tables')
-    #Source: https://github.com/streamlit/streamlit/issues/641
-    # .assign(hack='').set_index('hack')
-    selected = table_names_selected(data_csv_df, table_like, table_ids)
-    selection = ['Table','Column','Column_Total','Column_Join','Percent_Join']
-    st.dataframe((selected[selection].drop_duplicates(keep='last').assign(hack='').set_index('hack')))
+    with st.beta_expander("📃 Data Explorer 📃"):
+        st.subheader('Selected tables')
+        #Source: https://github.com/streamlit/streamlit/issues/641
+        # .assign(hack='').set_index('hack')
+        selected = table_names_selected(data_csv_df, table_like, table_ids)
+        selection = ['Table','Column','Column_Total','Column_Join','Percent_Join']
+        st.dataframe((selected[selection].drop_duplicates(keep='last').assign(hack='').set_index('hack')))
 
-    st.subheader('Surrounding columns')
-    st.dataframe(nodes_df['Table.Column'].unique())
-    st.subheader('Surrounding connections')
+        st.subheader('Surrounding columns')
+        st.dataframe(nodes_df['Table.Column'].unique())
+        st.subheader('Surrounding connections')
     #not working
     #st.write(pd.unique(edges_df['src','dst']]))
     #st.write(edges_df.groupby(['src','dst']).unique())
