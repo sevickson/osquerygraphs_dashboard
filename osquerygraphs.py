@@ -118,6 +118,18 @@ def table_names_selected(df, table, table_ids):
     
     return(filtered)
 
+def node_filtering(nodes,ids):
+    # Regex to check for Table or Table.Column from this specific table
+    ids_re = ['(^|\s)' + s + '(.|$)' for s in ids ]
+    nodes = nodes[nodes['z_tableFilter'].str.lower().str.contains('|'.join(ids_re), regex=True)]#'|'.join(ids), regex=False)]
+    return(nodes)
+
+def edge_filtering(edges,ids):
+    # Regex to check for Table or Table.Column from/to this specific table
+    ids_re = ['::' + s + '(.|$)' for s in ids ]
+    edges = edges[edges['z_tableFilter'].str.lower().str.contains('|'.join(ids_re), regex=True)] 
+    return(edges)
+
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, hash_funcs={pd.DataFrame: lambda _: None})
 def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disperse, os_choice,dark_mode,name_diff,expert_mode):
     #Get data
@@ -136,10 +148,11 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     ## Function to filter based on ids for nodes and edges
     # only enter if the length of ids is not all the tables and not off or empty
     if len(ids) < data_df_split['Table'].nunique() and not any("(off)" in s for s in table_ids) and not (ids == ''):
-        g = g.nodes(gf.P(g._nodes,ids)).edges(gf.j(g._edges,ids))
+        #g = g.nodes(gf.P(g._nodes,ids)).edges(gf.j(g._edges,ids))
+        g = g.nodes(node_filtering(g._nodes,ids)).edges(edge_filtering(g._edges,ids))
 
     # Add url params settings
-    g = g.settings(url_params={'play':'5000','showArrows':'false','edgeCurvature':0.02,'edgeOpacity':0.1,'lockedR':'true','dissuadeHubs':'true','linLog':'true','pointSize': 3,'bg':'white','labelBackground':'%234A4A4A','menu':'false','pruneOrphans':'true'})
+    g = g.settings(url_params={'play':'5000','showArrows':'false','edgeCurvature':0.02,'edgeOpacity':0.1,'lockedR':'true','dissuadeHubs':'true','linLog':'true','pointSize': 3,'bg':'white','labelBackground':'%234A4A4A','menu':'false'})
     
     if disperse:
         g = g.settings(url_params={'lockedR':'false'})
@@ -148,7 +161,7 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
         g = g.settings(url_params={'bg':'%23323238'})
     
     if name_diff:
-        g = g.edges(gf.w(g._edges))
+        g = g.edges(gf.w(g._edges)).settings(url_params={'pruneOrphans':'true'})
     
     if expert_mode:
         g = g.settings(url_params={'menu':'true'})
@@ -170,10 +183,13 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
     
     #Source: https://pmbaumgartner.github.io/streamlitopedia/markdown.html#using-markdown-files
     intro_markdown = read_markdown_file("intro.md")
-    st.markdown(intro_markdown, unsafe_allow_html=True)
+    #st.markdown(intro_markdown, unsafe_allow_html=True)
+
+    with st.beta_expander("ℹ Graph 🕸 Info"):
+        st.markdown(intro_markdown, unsafe_allow_html=True)
     
-    #st.title('Untangling Osquery❓ tables 🕸')
     # Display the graph!
+    #st.write(graph_url)
     render_url(graph_url)
 
     st.subheader('Selected tables')
@@ -199,7 +215,6 @@ def run_all():
     st.set_page_config(page_title='Osquery Table Visualizer', page_icon='https://raw.githubusercontent.com/osquery/osquery-site/source/public/favicons/favicon-32x32.png', layout='centered', initial_sidebar_state='auto')
 
     custom_css()
-    #custom_css(is_hide_dev_menu=False)
 
     try:
         # Render sidebar and get current settings
