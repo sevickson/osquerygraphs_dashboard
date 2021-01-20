@@ -193,6 +193,8 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
     render_url(graph_url)
 
     with st.beta_expander("📃 Data Explorer 📃"):
+        #TODO add markdown file import that can be expanded
+        
         st.subheader('Selected tables')
         #Source: https://github.com/streamlit/streamlit/issues/641
         # .assign(hack='').set_index('hack')
