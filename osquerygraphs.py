@@ -13,10 +13,10 @@ from pathlib import Path
 app_id = 'osquerygraphs'
 urlParams = URLParam(app_id)
 
-#TODO enable hide_menu in css again
-#TODO add hidden list with all tables/columns that are filtered out
+
 #TODO add more text to dashboard
-#TODO possible hidden option like named 'Data Explorer' with the dataframes
+#TODO add markdown file import that can be expanded
+#TODO add usage to streamlit sidebar how to select OS and tables and tell when use dispere graph
 
 # Have fun!
 def custom_css():
@@ -25,14 +25,6 @@ def custom_css():
         """<style>
         
         </style>""",unsafe_allow_html=True)
-
-# Generate SVG icons from FontAwesome, copy the .svg files into components/fa and use them based on filename
-#https://gist.github.com/treuille/8b9cbfec270f7cda44c5fc398361b3b1#gistcomment-3107721
-def icon_fa_svg(icon_name):#,w):
-    with open(f'components/fa/{icon_name}.svg','r') as f:
-        read_data = f.read()
-    return(read_data)
-    #st.image(read_data,width=w)
 
 #Source: https://pmbaumgartner.github.io/streamlitopedia/markdown.html#using-markdown-files
 @st.cache
@@ -46,31 +38,24 @@ def sidebar_area():
         #st.title('Osquery Table Visualizer')
         #https://discuss.streamlit.io/t/how-do-i-align-st-title/1668/5
         st.markdown("<h1 style='text-align: center; color: purple;'>Osquery Table Visualizer</h1>", unsafe_allow_html=True)
-        #st.markdown('<font color=red>THIS TEXT WILL BE RED</font>', unsafe_allow_html=True)
-        #st.markdown('Data retrieved from [Osquery Data Graph](https://github.com/sevickson/Osquery_Data_Graph)')
-        #st.markdown("---")
+        
+        usage_markdown = read_markdown_file("usage.md")
+        with st.beta_expander("☑ Usage"):
+            st.markdown(usage_markdown, unsafe_allow_html=True)
 
-        #os_choice = st.radio('Operating System', ['Windows','Linux','MacOS'])
-        left_column, right_column = st.beta_columns(2)
-        os_choice = left_column.radio('Operating System', ['Windows','Linux','MacOS'])
-        #will need to work on the view probably something to do with css?
-        #right_column.image(icon_fa_svg('windows'),10).image(icon_fa_svg('linux'),30).image(icon_fa_svg('apple'),30)
-        #right_column.image(icon_fa_svg('linux'),30)
-        #right_column.image(icon_fa_svg('apple'),30)
-        #icon_fa_svg('windows',30)
-        #icon_fa_svg('linux',30)
-        #icon_fa_svg('apple',30)
+        os_choice = st.radio('Operating System', ['Windows','Linux','MacOS'])
 
         if os_choice == 'Windows':
-            data_df = fetch_csv('https://raw.githubusercontent.com/sevickson/Osquery_Data_Graph/master/Data/data_intersect_graphs_windows_hashed_PERC.csv')
+            data_df = fetch_data('https://raw.githubusercontent.com/sevickson/Osquery_Data_Graph/master/Data/data_intersect_graphs_windows_hashed_PERC.csv')
         elif os_choice == 'Linux':
-            data_df = fetch_csv('https://raw.githubusercontent.com/sevickson/Osquery_Data_Graph/master/Data/data_intersect_graphs_linux_hashed_PERC.csv')
+            data_df = fetch_data('https://raw.githubusercontent.com/sevickson/Osquery_Data_Graph/master/Data/data_intersect_graphs_linux_hashed_PERC.csv')
         elif os_choice == 'MacOS':
-            data_df = fetch_csv('https://raw.githubusercontent.com/sevickson/Osquery_Data_Graph/master/Data/data_intersect_graphs_macos_hashed_PERC.csv')
+            data_df = fetch_data('https://raw.githubusercontent.com/sevickson/Osquery_Data_Graph/master/Data/data_intersect_graphs_macos_hashed_PERC.csv')
 
         tables = pd.concat([ data_df['Table'] ]).unique()
         tables.sort()
-        table_ids = st.multiselect('Show Tables with connections (remove (off) to enable filter)', ['(off)'] + tables.tolist())
+        #table_ids = st.multiselect('Show Tables with connections (remove (off) to enable filter)', ['(off)'] + tables.tolist())
+        table_ids = st.multiselect('Show Osquery tables with connections', tables.tolist())
         
         #Check later if needed
         #t_init = urlParams.get_field('T', '')
@@ -79,25 +64,24 @@ def sidebar_area():
         #TEMP for here above
         table_like = ''
 
-        name_diff = st.checkbox('Show connected Table columns with different names (Possible naming inconsistencies)')
-
-        #left_column, right_column = st.beta_columns(2)
-        #os_choice = left_column.radio('Operating System', ['Windows','Linux','MacOS'])
-        #if pressed:
-        #    right_column.write("Woohoo!")
+        name_diff = st.checkbox('Show connected Osquery table columns with different names (Possible naming inconsistencies)')
         
-        with st.beta_expander("⚙️ Graph options"):
+        with st.beta_expander("⚙️ Graph Options"):
             # Checkbox to remove the radius lock, good for further zooming in after a select
             disperse = st.checkbox('Disperse Graph')
             # Dark mode
             dark_mode = st.checkbox('Dark Mode')
             # Expert mode adds menu to the graph in graphistry
             expert_mode = st.checkbox('Expert Mode')
+        
+        btn = st.button("Why Not❕🎈")
+        if btn:
+            st.balloons()
 
     return {'num_nodes': 1000000, 'num_edges': 1000000, 'table_like': table_like, 'table_ids': table_ids, 'os_choice': os_choice, 'data_csv_df': data_df, 'disperse' : disperse, 'dark_mode': dark_mode, 'name_diff': name_diff, 'expert_mode': expert_mode}
 
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, hash_funcs={pd.DataFrame: lambda _: None})
-def fetch_csv(url):
+def fetch_data(url):
     df_r = pd.read_csv(url)
     return(df_r)
 
@@ -161,7 +145,8 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
         g = g.settings(url_params={'bg':'%23323238'})
     
     if name_diff:
-        g = g.edges(gf.w(g._edges)).settings(url_params={'pruneOrphans':'true'})
+        #pruneOrphans is not working will wait for fix
+        g = g.edges(gf.w(g._edges)).encode_edge_color('edgeType', ['#6f749a'], as_categorical=True)#.settings(url_params={'pruneOrphans':'true'})        
     
     if expert_mode:
         g = g.settings(url_params={'menu':'true'})
@@ -175,6 +160,13 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     graph_url = g.name(title).plot(render=False, as_files=True)
     return { 'nodes_df': g._nodes, 'edges_df': g._edges, 'graph_url': graph_url}
 
+def split_column(df,split_column):
+    temp_table = df[split_column].str.split(".", n = 1, expand = True)
+    df['Table'] = temp_table[0]
+    df['Column'] = temp_table[1]
+    df_join = df[['Table','Column']]
+    return(df_join)
+
 def render_url(url):
     iframe = '<iframe src="' + url + '", height="800", width="100%" allow="fullscreen"></iframe>'
     st.markdown(iframe, unsafe_allow_html=True)
@@ -183,31 +175,60 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
     
     #Source: https://pmbaumgartner.github.io/streamlitopedia/markdown.html#using-markdown-files
     intro_markdown = read_markdown_file("intro.md")
-    #st.markdown(intro_markdown, unsafe_allow_html=True)
-
     with st.beta_expander("🕸 Graph Info 🕸"):
         st.markdown(intro_markdown, unsafe_allow_html=True)
-    
+
+        c1, c2 = st.beta_columns(2)
+        with c1:
+            st.video("https://vimeo.com/502806993")
+            st.video("https://vimeo.com/502565608")
+        with c2:
+            st.video("https://vimeo.com/502381798")
+            st.video("https://vimeo.com/502815799")
+            
     # Display the graph!
     #st.write(graph_url)
     render_url(graph_url)
 
+    st.markdown('If there is an issue with the Graph rendering or the data, just hit __`F5`__🔃.')
+
     with st.beta_expander("📃 Data Explorer 📃"):
-        #TODO add markdown file import that can be expanded
-        
-        st.subheader('Selected tables')
+        st.subheader('Selected Osquery Tables')
         #Source: https://github.com/streamlit/streamlit/issues/641
         # .assign(hack='').set_index('hack')
         selected = table_names_selected(data_csv_df, table_like, table_ids)
         selection = ['Table','Column','Column_Total','Column_Join','Percent_Join']
         st.dataframe((selected[selection].drop_duplicates(keep='last').assign(hack='').set_index('hack')))
 
-        st.subheader('Surrounding columns')
-        st.dataframe(nodes_df['Table.Column'].unique())
-        st.subheader('Surrounding connections')
+        #st.subheader('Surrounding columns')
+        #st.dataframe(nodes_df['Table.Column'].unique())
+        #st.subheader('Surrounding connections')
     #not working
     #st.write(pd.unique(edges_df['src','dst']]))
     #st.write(edges_df.groupby(['src','dst']).unique())
+
+    with st.beta_expander("🚫 Table/Column Exclusions"):
+            if os_choice == 'Windows':
+                st.subheader(os_choice)
+                st.write('Just a quick search to spare you from searching for an Osquery table column combination that has been filtered out.')
+                
+                # Get the filter list and split the list
+                excl_df = pd.DataFrame(pd.read_csv('https://raw.githubusercontent.com/sevickson/Osquery_Data_Graph/master/Data/table_column_exclude_w.csv',header=None))
+                excl_df.columns = ['Table']
+                excl_df_split = split_column(excl_df,'Table')
+                
+                # Create multiselect to search it easily
+                tables_filt = excl_df_split['Table'].drop_duplicates()
+                tables_filt_ms = st.multiselect('',tables_filt.tolist())
+                
+                if tables_filt_ms:
+                    temp_b = excl_df_split.Table.isin(tables_filt_ms)
+                    filtered = excl_df_split[temp_b]
+                    st.dataframe(filtered.assign(hack='').set_index('hack'))
+                #elif os_choice == 'Linux':
+                    #data_df = fetch_data('')
+                #elif os_choice == 'MacOS':
+                    #data_df = fetch_data('')
 
 ############################################
 #
@@ -215,7 +236,7 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
 #
 ############################################
 def run_all():
-    st.set_page_config(page_title='Osquery Table Visualizer', page_icon='https://raw.githubusercontent.com/osquery/osquery-site/source/public/favicons/favicon-32x32.png', layout='centered', initial_sidebar_state='auto')
+    st.set_page_config(page_title='Osquery Table Visualizer', page_icon='https://raw.githubusercontent.com/osquery/osquery-site/source/public/favicons/favicon-32x32.png', layout='wide', initial_sidebar_state='auto') #layout='centered'
 
     custom_css()
 
