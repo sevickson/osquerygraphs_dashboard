@@ -36,6 +36,7 @@ def read_markdown_file(markdown_file):
 def sidebar_area():
     with st.sidebar:
         #st.title('Osquery Table Visualizer')
+        st.image('components/logo-2x-dark.png', width=100)
         #https://discuss.streamlit.io/t/how-do-i-align-st-title/1668/5
         st.markdown("<h1 style='text-align: center; color: purple;'>Osquery Table Visualizer</h1>", unsafe_allow_html=True)
         
@@ -178,13 +179,14 @@ def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, g
     with st.beta_expander("🕸 Graph Info 🕸"):
         st.markdown(intro_markdown, unsafe_allow_html=True)
 
-        c1, c2 = st.beta_columns(2)
-        with c1:
-            st.video("https://vimeo.com/502806993")
-            st.video("https://vimeo.com/502565608")
-        with c2:
-            st.video("https://vimeo.com/502381798")
-            st.video("https://vimeo.com/502815799")
+        #need to fix mime-type
+        #c1, c2 = st.beta_columns(2)
+        #with c1:
+        #    st.video("https://vimeo.com/502806993")
+        #    st.video("https://vimeo.com/502565608")
+        #with c2:
+        #    st.video("https://vimeo.com/502381798")
+        #    st.video("https://vimeo.com/502815799")
             
     # Display the graph!
     #st.write(graph_url)
