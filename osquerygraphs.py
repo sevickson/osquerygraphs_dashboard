@@ -1,8 +1,10 @@
 import pandas as pd, streamlit as st
 from components.URLParam import URLParam
 from components.css import all_css
-from components import gfunctions as gf
+from components import graphfunctions as gf
 from pathlib import Path
+#beta
+from components import secrets_beta
 
 ############################################
 #
@@ -13,12 +15,6 @@ from pathlib import Path
 app_id = 'osquerygraphs'
 urlParams = URLParam(app_id)
 
-
-#TODO add more text to dashboard
-#TODO add markdown file import that can be expanded
-#TODO add usage to streamlit sidebar how to select OS and tables and tell when use dispere graph
-
-# Have fun!
 def custom_css():
     all_css()
     st.markdown(
@@ -35,12 +31,14 @@ def read_markdown_file(markdown_file):
 #https://docs.streamlit.io/en/stable/api.html#display-interactive-widgets
 def sidebar_area():
     with st.sidebar:
-        #st.title('Osquery Table Visualizer')
-        st.image('components/logo-2x-dark.png', width=100)
-        #https://discuss.streamlit.io/t/how-do-i-align-st-title/1668/5
-        st.markdown("<h1 style='text-align: center; color: purple;'>Osquery Table Visualizer</h1>", unsafe_allow_html=True)
+        c1, c2 = st.beta_columns(2)
+        with c1:
+            st.image('components/logo-2x-dark.png', width=100)
+        with c2:
+            #https://discuss.streamlit.io/t/how-do-i-align-st-title/1668/5
+            st.markdown("<h1 style='color: purple;'>Table Visualizer</h1>", unsafe_allow_html=True)
         
-        usage_markdown = read_markdown_file("usage.md")
+        usage_markdown = read_markdown_file("components/usage.md")
         with st.beta_expander("☑ Usage"):
             st.markdown(usage_markdown, unsafe_allow_html=True)
 
@@ -118,12 +116,12 @@ def edge_filtering(edges,ids):
 @st.cache(suppress_st_warning=True, allow_output_mutation=True, hash_funcs={pd.DataFrame: lambda _: None})
 def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disperse, os_choice,dark_mode,name_diff,expert_mode):
     #Get data
-    data_df_split = gf.m(data_csv_df,'intersect')
+    data_df_split = gf.split_intersect(data_csv_df,'intersect')
 
     lvl1, lvl2, lvl3 = 'Table', 'Table.Column', 'output'
-    ids = gf.z(data_df_split, table_like, table_ids)
+    ids = gf.table_name_to_ids(data_df_split, table_like, table_ids)
 
-    g = gf.n(data_df_split, lvl1, lvl2, lvl3)
+    g = gf.graphistry_graph(data_df_split, lvl1, lvl2, lvl3)
 
     # Add color
     # Colors from Osquery logo #a596ff and #00125f
@@ -147,7 +145,7 @@ def run_filters(num_nodes, num_edges, table_like, table_ids, data_csv_df, disper
     
     if name_diff:
         #pruneOrphans is not working will wait for fix
-        g = g.edges(gf.w(g._edges)).encode_edge_color('edgeType', ['#6f749a'], as_categorical=True)#.settings(url_params={'pruneOrphans':'true'})        
+        g = g.edges(gf.namediff_filtering(g._edges)).encode_edge_color('edgeType', ['#6f749a'], as_categorical=True)#.settings(url_params={'pruneOrphans':'true'})        
     
     if expert_mode:
         g = g.settings(url_params={'menu':'true'})
@@ -175,7 +173,7 @@ def render_url(url):
 def main_area(num_nodes, num_edges, table_like, table_ids, nodes_df, edges_df, graph_url, os_choice, data_csv_df, disperse,dark_mode,name_diff,expert_mode):
     
     #Source: https://pmbaumgartner.github.io/streamlitopedia/markdown.html#using-markdown-files
-    intro_markdown = read_markdown_file("intro.md")
+    intro_markdown = read_markdown_file("components/intro.md")
     with st.beta_expander("🕸 Graph Info 🕸"):
         st.markdown(intro_markdown, unsafe_allow_html=True)
 
